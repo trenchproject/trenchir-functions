@@ -1,0 +1,44 @@
+{
+  "disabled": false,
+  "bindings": [
+    {
+      "name": "myBlob",
+      "path": "uploads/{name}",
+      "connection": "AzureWebJobsStorage",
+      "direction": "in",
+      "type": "blobTrigger"
+    },
+    {
+      "name": "output",
+      "type": "blob",
+      "datatype": "binary",
+      "direction": "out",
+      "path": "raw/RAW-{name}.tiff",
+      "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outputparam",
+      "type": "blob",
+      "datatype": "string",
+      "direction": "out",
+      "path": "param/PARAM-{name}.json",
+      "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outputog",
+      "type": "blob",
+      "datatype": "binary",
+      "direction": "out",
+      "path": "originals/{name}",
+      "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outputembed",
+      "type": "blob",
+      "datatype": "binary",
+      "direction": "out",
+      "path": "embedded/EMBED-{name}",
+      "connection": "AzureWebJobsStorage"
+    }
+  ]
+}
