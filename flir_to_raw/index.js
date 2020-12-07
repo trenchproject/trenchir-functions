@@ -42,6 +42,7 @@ module.exports = function(context, myBlob) {
 
                     // Ends function if no planck constants
                     if(!pR1){ 
+                        context.log("No planck constant");
                         fs.unlink(filename+"."+ogtype, (err) => {
                             if (err) throw err;
                             context.log('successfully deleted ' + filename+"."+ogtype);
@@ -51,11 +52,12 @@ module.exports = function(context, myBlob) {
                     }
 
                     context.log("Filename: " + filename);
-                    context.log("Filename.ogtype: " + filename+"."+ogtype);
-                    context.log("Filename-RAW.rawtype: " + filename+"-RAW."+rawtype);
+                    context.log("ogtype: " + ogtype);
+                    context.log("rawtype: " + rawtype);
+                    context.log("planck: " + pR1);
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW1."+rawtype], (err) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW."+rawtype], (err) => {
                         if (err) {
                             context.error(`exec error: ${err}`);
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
@@ -65,7 +67,7 @@ module.exports = function(context, myBlob) {
 
                     context.log("exiftool step");
 
-                    im.convert([filename+filename+"-RAW1."+rawtype, 'gray', filename+"-RAW2."+rawtype], function(err, stdout){
+                    im.convert([filename+filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
                         if (err) {
                             context.log(err);
                             throw err;
@@ -76,7 +78,7 @@ module.exports = function(context, myBlob) {
                     context.log("convert 1");
 
                     if(rawtype=="TIFF" || rawtype=="tiff"){
-                        im.convert([filename+"-RAW2."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                        im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
                             if (err) {
                                 console.log(err);
                                 throw err;
@@ -84,7 +86,7 @@ module.exports = function(context, myBlob) {
                             context.log('stdout:', stdout);
                         });
                     } else if(rawtype=="PNG" || rawtype=="png"){
-                        im.convert([filename+"-RAW2."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                        im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
                             if (err) {
                                 console.log(err);
                                 throw err;
