@@ -59,13 +59,17 @@ module.exports = function(context, myBlob) {
                         context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-RAW."+rawtype);
                     });
 
+                    context.log("exiftool step");
+
                     im.convert([filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
                         if (err) {
                             console.log(err);
                             throw err;
                         }
-                        console.log('stdout:', stdout);
+                        context.log('stdout:', stdout);
                     });
+
+                    context.log("convert 1");
 
                     if(rawtype=="TIFF" || rawtype=="tiff"){
                         im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
@@ -73,7 +77,7 @@ module.exports = function(context, myBlob) {
                                 console.log(err);
                                 throw err;
                             }
-                            console.log('stdout:', stdout);
+                            context.log('stdout:', stdout);
                         });
                     } else if(rawtype=="PNG" || rawtype=="png"){
                         im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
@@ -81,11 +85,13 @@ module.exports = function(context, myBlob) {
                                 console.log(err);
                                 throw err;
                             }
-                            console.log('stdout:', stdout);
+                            context.log('stdout:', stdout);
                         });
                     } else {
                         throw "ERROR: Unrecognized raw image type.";
                     }
+
+                    context.log("convert 2");
                         
                     // Reading in raw thermal image
                     fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
