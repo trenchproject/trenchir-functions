@@ -20,6 +20,7 @@ module.exports = function(context, myBlob) {
 
             // Pulling metadata from og file
             execFile(exiftool, ['-j', filename+"."+ogtype], (error, stdout, stderr) => {
+                context.log(stdout);
                 if (err) {
                     context.error(`exec error: ${error}`);
                     fs.unlink(filename+"."+ogtype, (err) => {
@@ -43,7 +44,6 @@ module.exports = function(context, myBlob) {
                     context.log("Filename: " + filename);
                     context.log("rawtype: " + rawtype);
                     context.log("planck: " + pR1);
-                    
                     context.log("ogtype: " + ogtype);
 
                     // Ends function if no planck constants
