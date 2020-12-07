@@ -60,18 +60,27 @@ module.exports = function(context, myBlob) {
                     });
 
                     im.convert([filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
-                        if (err) throw err;
+                        if (err) {
+                            console.log(err);
+                            throw err;
+                        }
                         console.log('stdout:', stdout);
                     });
 
                     if(rawtype=="TIFF" || rawtype=="tiff"){
                         im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
-                            if (err) throw err;
+                            if (err) {
+                                console.log(err);
+                                throw err;
+                            }
                             console.log('stdout:', stdout);
                         });
                     } else if(rawtype=="PNG" || rawtype=="png"){
                         im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
-                            if (err) throw err;
+                            if (err) {
+                                console.log(err);
+                                throw err;
+                            }
                             console.log('stdout:', stdout);
                         });
                     } else {
