@@ -61,7 +61,7 @@ module.exports = function(context, myBlob) {
 
                     context.log("exiftool step");
 
-                    im.convert([filename+"-RAW1."+rawtype, 'gray', filename+"-RAW2."+rawtype], function(err, stdout){
+                    im.convert([filename+filename+"-RAW1."+rawtype, 'gray', filename+"-RAW2."+rawtype], function(err, stdout){
                         if (err) {
                             context.log(err);
                             throw err;
