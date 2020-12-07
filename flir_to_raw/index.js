@@ -63,7 +63,7 @@ module.exports = function(context, myBlob) {
 
                     im.convert([filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
                         if (err) {
-                            console.log(err);
+                            context.log(err);
                             throw err;
                         }
                         context.log('stdout:', stdout);
