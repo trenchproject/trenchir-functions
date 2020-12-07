@@ -20,7 +20,7 @@ module.exports = function(context, myBlob) {
 
             // Pulling metadata from og file
             execFile(exiftool, ['-j', filename+"."+ogtype], (error, stdout, stderr) => {
-                context.log(stdout);
+                
                 if (err) {
                     context.error(`exec error: ${error}`);
                     fs.unlink(filename+"."+ogtype, (err) => {
@@ -34,6 +34,7 @@ module.exports = function(context, myBlob) {
                 try{ 
                     var metadata = JSON.parse(stdout);
                     metadata = metadata[0];
+                    context.log("metadata: " + metadata);
                     var embedtype = metadata.EmbeddedImageType;
                     var pR1 = metadata.PlanckR1;
                     var rawwidth = metadata.RawThermalImageWidth;
