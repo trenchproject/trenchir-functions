@@ -34,18 +34,16 @@ module.exports = function(context, myBlob) {
                 try{ 
                     var metadata = JSON.parse(stdout);
                     metadata = metadata[0];
-                    context.log("metadata: " + metadata);
+                    context.log("metadata raw thermal image type: " + metadata.RawThermalImageType);
+                    context.log("metadata og image type: " + ogtype);
+
+
                     var embedtype = metadata.EmbeddedImageType;
                     var pR1 = metadata.PlanckR1;
                     var rawwidth = metadata.RawThermalImageWidth;
                     var rawheight = metadata.RawThermalImageHeight;
                     var rawtype = metadata.RawThermalImageType;
                     var resolution = rawwidth.toString()+"x"+rawheight.toString();
-
-                    context.log("Filename: " + filename);
-                    context.log("rawtype: " + rawtype);
-                    context.log("planck: " + pR1);
-                    context.log("ogtype: " + ogtype);
 
                     // Ends function if no planck constants
                     if(!pR1){ 
