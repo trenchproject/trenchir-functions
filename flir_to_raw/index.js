@@ -66,7 +66,7 @@ module.exports = function(context, myBlob) {
 
                         context.log("exiftool step");
 
-                        im.convert([filename+filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
+                        im.convert([filename+filename+"-RAW."+rawtype, 'gray', filename+"-RAW1."+rawtype], function(err, stdout){
                             if (err) {
                                 context.log(err);
                                 throw err;
@@ -75,7 +75,7 @@ module.exports = function(context, myBlob) {
                             context.log("convert 1");
 
                             if(rawtype=="TIFF" || rawtype=="tiff"){
-                                im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                                im.convert([filename+"-RAW1."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW-final"+rawtype], function(err, stdout){
                                     if (err) {
                                         context.log(err);
                                         throw err;
@@ -84,7 +84,7 @@ module.exports = function(context, myBlob) {
                                     context.log("convert 2");
                         
                                     // Reading in raw thermal image
-                                    fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
+                                    fs.readFile(filename+"-RAW-final."+rawtype, (err, rawimg) => {
                                         if (err) {
                                             context.log(err);
                                             throw "Error reading RawThermalImage. Unsupported filetype.";
