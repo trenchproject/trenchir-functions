@@ -38,7 +38,13 @@ module.exports = function(context, myBlob) {
                     var rawwidth = metadata.RawThermalImageWidth;
                     var rawheight = metadata.RawThermalImageHeight;
                     var rawtype = metadata.RawThermalImageType;
-                    var resolution = rawwidth.toString()+"X"+rawheight.toString();
+                    var resolution = rawwidth.toString()+"x"+rawheight.toString();
+
+                    context.log("Filename: " + filename);
+                    context.log("rawtype: " + rawtype);
+                    context.log("planck: " + pR1);
+                    
+                    context.log("ogtype: " + ogtype);
 
                     // Ends function if no planck constants
                     if(!pR1){ 
@@ -50,11 +56,6 @@ module.exports = function(context, myBlob) {
                         blockBlobClient.delete();
                         throw "Unsupported filetype. Unable to extract necessary metadata for conversion, no planck constants.";
                     }
-
-                    context.log("Filename: " + filename);
-                    context.log("ogtype: " + ogtype);
-                    context.log("rawtype: " + rawtype);
-                    context.log("planck: " + pR1);
 
                     // Extracting raw thermal image
                     execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW."+rawtype], (err) => {
