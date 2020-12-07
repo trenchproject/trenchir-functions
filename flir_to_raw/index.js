@@ -50,6 +50,10 @@ module.exports = function(context, myBlob) {
                         throw "Unsupported filetype. Unable to extract necessary metadata for conversion, no planck constants.";
                     }
 
+                    context.log("Filename: " + filename);
+                    context.log("Filename.ogtype: " + filename+"."+ogtype);
+                    context.log("Filename-RAW.rawtype: " + filename+"-RAW."+rawtype);
+
                     // Extracting raw thermal image
                     execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW1."+rawtype], (err) => {
                         if (err) {
