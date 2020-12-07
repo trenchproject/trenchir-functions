@@ -17,6 +17,7 @@
     "dist-exiftool": "",
     "fs": "",
     "ffmpeg": "",
-    "@azure/storage-blob": ""
+    "@azure/storage-blob": "",
+    "imagemagick": ""
   }
 }

@@ -2,6 +2,7 @@
 const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
+const im = require('imagemagick');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -32,9 +33,12 @@ module.exports = function(context, myBlob) {
                 try{ 
                     var metadata = JSON.parse(stdout);
                     metadata = metadata[0];
-                    var rawtype = metadata.RawThermalImageType;
                     var embedtype = metadata.EmbeddedImageType;
                     var pR1 = metadata.PlanckR1;
+                    var rawwidth = metadata.RawThermalImageWidth;
+                    var rawheight = metadata.RawThermalImageHeight;
+                    var rawtype = metadata.RawThermalImageType;
+                    var resolution = rawwidth.toString()+"X"+rawheight.toString();
 
                     // Ends function if no planck constants
                     if(!pR1){ 
@@ -47,56 +51,76 @@ module.exports = function(context, myBlob) {
                     }
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-RAW."+rawtype], (error, stdout, stderr) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-RAW."+rawtype], (error) => {
                         if (err) {
                             context.error(`exec error: ${error}`);
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
                         }
-
                         context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-RAW."+rawtype);
+                    });
+
+                    im.convert([filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
+                        if (err) throw err;
+                        console.log('stdout:', stdout);
+                    });
+
+                    if(rawtype=="TIFF" || rawtype=="tiff"){
+                        im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                            if (err) throw err;
+                            console.log('stdout:', stdout);
+                        });
+                    } else if(rawtype=="PNG" || rawtype=="png"){
+                        im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                            if (err) throw err;
+                            console.log('stdout:', stdout);
+                        });
+                    } else {
+                        throw "ERROR: Unrecognized raw image type.";
+                    }
                         
-                        // Reading in raw thermal image
-                        fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
-                            if (err) {
-                                context.log(err);
-                                throw "Error reading RawThermalImage. Unsupported filetype.";
-                            }
+                    // Reading in raw thermal image
+                    fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
+                        if (err) {
+                            context.log(err);
+                            throw "Error reading RawThermalImage. Unsupported filetype.";
+                        }
 
-                            // Extracting embedded image
-                            execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
-                                if (err) {context.log("No embedded image...");} 
-                                else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
+                        // Extracting embedded image
+                        execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
+                            if (err) {context.log("No embedded image...");} 
+                            else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
+                            
+                            // Reading in embedded image
+                            fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
+                                if (err) context.log(err);
+                                else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
+
+                                // Setting output data
+                                context.bindings.outputembed = embeddedimg;
+                                context.bindings.output = rawimg;
+                                context.bindings.outputog = myBlob;
+                                context.bindings.outputparam = metadata;
+
+                                context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
+                                context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
+                                context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
                                 
-                                // Reading in embedded image
-                                fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
+
+                                // Deleting local temporary files
+                                fs.unlink(filename+"-EMBED."+embedtype, (err) => {
                                     if (err) context.log(err);
-
-                                    // Setting output data
-                                    context.bindings.outputembed = embeddedimg;
-                                    context.bindings.output = rawimg;
-                                    context.bindings.outputog = myBlob;
-                                    context.bindings.outputparam = metadata;
-
-                                    context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
-                                    context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
-                                    context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
-
-                                    // Deleting local temporary files
-                                    fs.unlink(filename+"-EMBED."+embedtype, (err) => {
-                                        if (err) context.log(err);
-                                        context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
-                                    });
-                                    fs.unlink(filename+"."+ogtype, (err) => {
-                                        if (err) context.log(err);
-                                        context.log('successfully deleted ' + filename+"."+ogtype);
-                                    });
-                                    fs.unlink(filename+"-RAW."+rawtype, (err) => {
-                                        if (err) context.log(err);
-                                        context.log('successfully deleted ' + filename+"."+rawtype);
-                                    });
-
-                                    context.done(); // End of function
+                                    context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
                                 });
+                                fs.unlink(filename+"."+ogtype, (err) => {
+                                    if (err) context.log(err);
+                                    context.log('successfully deleted ' + filename+"."+ogtype);
+                                });
+                                fs.unlink(filename+"-RAW."+rawtype, (err) => {
+                                    if (err) context.log(err);
+                                    context.log('successfully deleted ' + filename+"."+rawtype);
+                                });
+
+                                context.done(); // End of function
                             });
                         });
                     });
