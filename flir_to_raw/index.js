@@ -57,81 +57,26 @@ module.exports = function(context, myBlob) {
                     }
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w!', filename+"-RAW."+rawtype], (err) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW-step1."+rawtype], (err) => {
                         if (err) {
                             context.log(`exec error: ${err}`);
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
                         }
-                        context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-RAW."+rawtype);
+                        context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-RAW-step1."+rawtype);
 
                         context.log("exiftool step");
 
-                        im.convert([filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
+                        im.convert([filename+"-RAW-step1."+rawtype, 'gray', filename+"-RAW-step2."+rawtype], function(err, stdout){
                             if (err) {
                                 context.log(err);
                                 throw err;
                             }
                             context.log('stdout:', stdout);
+
                             context.log("convert 1");
 
-                            if(rawtype=="TIFF" || rawtype=="tiff"){
-                                im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'lsb', '-size', resolution, 'gray', filename+"-RAW-final"+rawtype], function(err, stdout){
-                                    if (err) {
-                                        context.log(err);
-                                        throw err;
-                                    }
-                                    context.log('stdout:', stdout);
-                                    context.log("convert 2");
-                        
-                                    // Reading in raw thermal image
-                                    fs.readFile(filename+"-RAW-final."+rawtype, (err, rawimg) => {
-                                        if (err) {
-                                            context.log(err);
-                                            throw "Error reading RawThermalImage. Unsupported filetype.";
-                                        }
-
-                                        // Extracting embedded image
-                                        execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
-                                            if (err) {context.log("No embedded image...");} 
-                                            else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
-                                            
-                                            // Reading in embedded image
-                                            fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
-                                                if (err) context.log(err);
-                                                else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
-
-                                                // Setting output data
-                                                context.bindings.outputembed = embeddedimg;
-                                                context.bindings.output = rawimg;
-                                                context.bindings.outputog = myBlob;
-                                                context.bindings.outputparam = metadata;
-
-                                                context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
-                                                context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
-                                                context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
-                                                
-
-                                                // Deleting local temporary files
-                                                fs.unlink(filename+"-EMBED."+embedtype, (err) => {
-                                                    if (err) context.log(err);
-                                                    context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
-                                                });
-                                                fs.unlink(filename+"."+ogtype, (err) => {
-                                                    if (err) context.log(err);
-                                                    context.log('successfully deleted ' + filename+"."+ogtype);
-                                                });
-                                                fs.unlink(filename+"-RAW."+rawtype, (err) => {
-                                                    if (err) context.log(err);
-                                                    context.log('successfully deleted ' + filename+"."+rawtype);
-                                                });
-
-                                                context.done(); // End of function
-                                            });
-                                        });
-                                    });
-                                });
-                            } else if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert([filename+"-RAW."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                            if(rawtype=="PNG" || rawtype=="png"){
+                                im.convert([filename+"-RAW-step3."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
