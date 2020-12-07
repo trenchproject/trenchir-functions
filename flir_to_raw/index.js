@@ -51,9 +51,9 @@ module.exports = function(context, myBlob) {
                     }
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW."+rawtype], (error) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', filename+"-RAW."+rawtype], (err) => {
                         if (err) {
-                            context.error(`exec error: ${error}`);
+                            context.error(`exec error: ${err}`);
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
                         }
                         context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-RAW."+rawtype);
