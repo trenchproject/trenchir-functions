@@ -2,7 +2,7 @@
 const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
-const gm = require('graphicsmagick');
+const gm = require('gm');
 const im = require('imagemagick');
 
 // Function triggered by new blob in "uploads" folder
