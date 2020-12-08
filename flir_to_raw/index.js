@@ -66,7 +66,7 @@ module.exports = function(context, myBlob) {
 
                         context.log("exiftool step");
 
-                        im.convert([filename+"-RAW."+rawtype, 'gray', filename+"-RAW."+rawtype], function(err, stdout){
+                        im.convert(['raw-file.jpg', 'gray:raw-file.gray'], function(err, stdout){
                             if (err) {
                                 context.log(err);
                                 throw err;
@@ -76,7 +76,7 @@ module.exports = function(context, myBlob) {
                             context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert([filename+"-RAW-step3."+rawtype, '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray', filename+"-RAW"+rawtype], function(err, stdout){
+                                im.convert(['raw-file.gray', '-depth', '16', 'endian', 'msb', '-size', resolution, 'gray'+filename+"-RAW."+rawtype], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
