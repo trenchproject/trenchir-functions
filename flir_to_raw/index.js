@@ -3,6 +3,7 @@ const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('imagemagick');
+const gm = require('gm').subClass({imageMagick: true});
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -76,9 +77,10 @@ module.exports = function(context, myBlob) {
 
                         context.log("test");
 
+                        var writeStream = fs.createWriteStream("raw.gray");
+                            gm(filename+"-rawtemp.tiff").setFormat("gray").write(writeStream, function(error){
+                            console.log("Finished saving", error);
                         
-
-                        im.convert([filename+"-rawtemp.tiff", 'gray:-'], function(err, stdout){
                             if (err) {
                                 context.log(err);
                             }
