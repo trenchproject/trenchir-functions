@@ -67,24 +67,23 @@ module.exports = function(context, myBlob) {
 
                         await context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
-
-                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], async function(err, stdout){
-                            await context.log(err);
-                            await context.log(stdout);
-                            await context.log("convert 1");
+                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], function(err, stdout){
+                            context.log(err);
+                            context.log(stdout);
+                            context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], async function(err, stdout){
+                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
                                     if (err) {
-                                        await console.log(err);
+                                        console.log(err);
                                         throw err;
                                     }
-                                    await context.log('stdout:', stdout);
+                                    context.log('stdout:', stdout);
 
-                                    await context.log("convert 2");
+                                    context.log("convert 2");
                         
                                     // Reading in raw thermal image
-                                    fs.readFile(filename+"-RAW."+rawtype, async (err, rawimg) => {
+                                    fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
                                         if (err) {
                                             context.log(err);
                                             throw "Error reading RawThermalImage. Unsupported filetype.";
