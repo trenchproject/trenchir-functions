@@ -59,25 +59,17 @@ module.exports = function(context, myBlob) {
                     // Extracting raw thermal image
                     execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], async (err) => {
                         if (err) {
-                            await context.log(err);
+                            context.log(err);
                         }
-
-                        await context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
                         await context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-rawtemp.tiff");
 
-                        await context.log("test");
+                        await context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
-                        await context.log("test");
-
-                        await context.log("test");
 
                         im.convert([filename+"-rawtemp.tiff", 'raw.gray'], async function(err, stdout){
-                            if (err) {
-                                await context.log(err);
-                            }
-                            await context.log('stdout:', stdout);
-
+                            await context.log(err);
+                            await context.log(stdout);
                             await context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
