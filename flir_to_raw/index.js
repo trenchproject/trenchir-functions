@@ -68,7 +68,7 @@ module.exports = function(context, myBlob) {
                         await context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
 
-                        im.convert([filename+"-rawtemp.tiff", 'gray:raw.gray'], async function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], async function(err, stdout){
                             await context.log(err);
                             await context.log(stdout);
                             await context.log("convert 1");
