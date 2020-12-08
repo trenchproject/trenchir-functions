@@ -3,7 +3,7 @@ const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('imagemagick');
-const gm = require('graphicsmagick').subClass({imageMagick: true});
+const gm = require('graphicsmagick');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
