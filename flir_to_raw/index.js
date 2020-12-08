@@ -81,17 +81,17 @@ module.exports = function(context, myBlob) {
                             await context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
+                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], async function(err, stdout){
                                     if (err) {
-                                        console.log(err);
+                                        await console.log(err);
                                         throw err;
                                     }
-                                    context.log('stdout:', stdout);
+                                    await context.log('stdout:', stdout);
 
-                                    context.log("convert 2");
+                                    await context.log("convert 2");
                         
                                     // Reading in raw thermal image
-                                    fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
+                                    fs.readFile(filename+"-RAW."+rawtype, async (err, rawimg) => {
                                         if (err) {
                                             context.log(err);
                                             throw "Error reading RawThermalImage. Unsupported filetype.";
