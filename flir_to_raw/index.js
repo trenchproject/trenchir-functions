@@ -68,7 +68,8 @@ module.exports = function(context, myBlob) {
 
                         gm(filename+"-rawtemp.tiff")
                         .write('raw.gray', function (err) {
-                            if (err) console.log(err);
+                            if (err) context.log(err);
+                            context.log("writing raw.gray");
                         });
 
                         context.log("convert 1");
@@ -78,7 +79,8 @@ module.exports = function(context, myBlob) {
                             .bitdepth(16)
                             .endian('MSB')
                             .write(filename+"-RAW.tiff", function (err) {
-                                if (err) console.log(err);
+                                if (err) context.log(err);
+                                context.log("writing raw");
                             });
 
                             // Reading in raw thermal image
