@@ -58,7 +58,7 @@ module.exports = function(context, myBlob) {
                     }
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], (err) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], async (err) => {
                         if (err) {
                             context.log(err);
                         }
@@ -69,7 +69,10 @@ module.exports = function(context, myBlob) {
 
                         var file = filename+"-rawtemp.tiff";
 
-                        im.convert([file, 'gray:-'], function(err, stdout){
+                        var gray = await im.convert([file, 'gray:-'], function(err, stdout){});
+
+                        fs.writeFile('raw.gray', gray, function(err) {
+
                             context.log(err);
                             context.log(stdout);
                             context.log("convert 1");
