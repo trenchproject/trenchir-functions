@@ -57,28 +57,28 @@ module.exports = function(context, myBlob) {
                     }
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], (err) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], async (err) => {
                         if (err) {
-                            context.log(err);
+                            await context.log(err);
                         }
 
-                        context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
+                        await context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
-                        context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-rawtemp.tiff");
+                        await context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-rawtemp.tiff");
 
-                        context.log("test");
+                        await context.log("test");
 
-                        context.log("test");
+                        await context.log("test");
 
-                        context.log("test");
+                        await context.log("test");
 
-                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], async function(err, stdout){
                             if (err) {
-                                context.log(err);
+                                await context.log(err);
                             }
-                            context.log('stdout:', stdout);
+                            await context.log('stdout:', stdout);
 
-                            context.log("convert 1");
+                            await context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
                                 im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
