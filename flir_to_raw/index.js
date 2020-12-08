@@ -3,6 +3,7 @@ const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('imagemagick');
+const { exit } = require('process');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -144,6 +145,7 @@ module.exports = function(context, myBlob) {
                         if (err) throw err;
                         context.log('successfully deleted ' + filename+"-rawtemp.tiff");
                     });
+                    exit;
                 }
             });
         }
