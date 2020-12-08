@@ -136,7 +136,8 @@ module.exports = function(context, myBlob) {
                         });
                     });
                 } catch(err) {
-                    context.log(err.message);
+                    await context.log(err.message);
+                    await context.log("Error caught");
                     fs.unlink(filename+"."+ogtype, (err) => {
                         if (err) throw err;
                         context.log('successfully deleted ' + filename+"."+ogtype);
