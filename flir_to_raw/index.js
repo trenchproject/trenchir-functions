@@ -69,9 +69,8 @@ module.exports = function(context, myBlob) {
                         gm(filename+"-rawtemp.tiff")
                         .write('raw.gray', async function (err) {
                             if (err) console.log(err);
-                        });
 
-                        await context.log("convert 1");
+                            await context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
                                 gm.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
@@ -133,6 +132,8 @@ module.exports = function(context, myBlob) {
                             } else {
                                 throw "ERROR: Unrecognized raw image type.";
                             }
+                        
+                        });
                     });
                 } catch(err) {
                     context.log(err.message);
