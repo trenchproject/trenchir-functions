@@ -67,11 +67,11 @@ module.exports = function(context, myBlob) {
                         context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
                         gm(filename+"-rawtemp.tiff")
-                        .write('raw.gray', function (err) {
+                        .write('raw.gray', async function (err) {
                             if (err) console.log(err);
                         });
 
-                        context.log("convert 1");
+                        await context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
                                 gm.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
