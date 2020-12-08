@@ -67,7 +67,9 @@ module.exports = function(context, myBlob) {
 
                         context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
-                        im.convert([filename+"-rawtemp.tiff", 'gray:-'], function(err, stdout){
+                        var file = filename+"-rawtemp.tiff";
+
+                        im.convert([file, 'gray:-'], function(err, stdout){
                             context.log(err);
                             context.log(stdout);
                             context.log("convert 1");
