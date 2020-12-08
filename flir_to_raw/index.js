@@ -67,7 +67,7 @@ module.exports = function(context, myBlob) {
                         await context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
 
-                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], async function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'gray:raw.gray'], async function(err, stdout){
                             await context.log(err);
                             await context.log(stdout);
                             await context.log("convert 1");
@@ -135,7 +135,7 @@ module.exports = function(context, myBlob) {
                         });
                     });
                 } catch(err) {
-                    context.log(err);
+                    context.log(err.message);
                     fs.unlink(filename+"."+ogtype, (err) => {
                         if (err) throw err;
                         context.log('successfully deleted ' + filename+"."+ogtype);
