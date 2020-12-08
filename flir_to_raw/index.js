@@ -78,7 +78,7 @@ module.exports = function(context, myBlob) {
 
                         
 
-                        im.convert([filename+"-rawtemp.tiff", 'gray:raw.gray'], function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], function(err, stdout){
                             if (err) {
                                 context.log(err);
                             }
