@@ -70,7 +70,6 @@ module.exports = function(context, myBlob) {
                         .write('raw.gray', function (err) {
                             if (err) context.log(err);
                             context.log("writing raw.gray");
-                        });
 
                         context.log("convert 1");
 
@@ -81,7 +80,6 @@ module.exports = function(context, myBlob) {
                             .write(filename+"-RAW.tiff", function (err) {
                                 if (err) context.log(err);
                                 context.log("writing raw");
-                            });
 
                             // Reading in raw thermal image
                             fs.readFile(filename+"-RAW.tiff", (err, rawimg) => {
@@ -129,10 +127,12 @@ module.exports = function(context, myBlob) {
                                     });
                                 });
                             });
+                        });
                         } else {
                             throw "ERROR: Unrecognized raw image type.";
                         }
                     });
+                });
                 } catch(err) {
                     context.log(err.message);
                     context.log("Error caught");
