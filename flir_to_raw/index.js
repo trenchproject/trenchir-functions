@@ -77,7 +77,6 @@ module.exports = function(context, myBlob) {
                             gm('raw.gray')
                             .bitdepth(16)
                             .endian('MSB')
-                            .size(resolution)
                             .write(filename+"-RAW.tiff", function (err) {
                                 if (err) console.log(err);
                             });
