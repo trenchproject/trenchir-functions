@@ -18,6 +18,6 @@
     "fs": "",
     "ffmpeg": "",
     "@azure/storage-blob": "",
-    "azure-imagemagick": ""
+    "gm": ""
   }
 }

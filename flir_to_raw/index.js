@@ -2,7 +2,7 @@
 const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
-const im = require('azure-imagemagick');
+const gm = require('gm');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -68,23 +68,14 @@ module.exports = function(context, myBlob) {
 
                         var file = filename+"-rawtemp.tiff";
 
-                        var gray = im.convert([file, 'gray:raw.gray'], function(err, stdout){
-                            if (err) {
-                                console.log(err);
-                                throw err;
-                            }
-                        });
+                        gm(filename+"-rawtemp.tiff")
+                        .write('raw.gray', function (err) {
+                            if (err) console.log(err);
 
-                        context.log("writing raw");
-
-                        fs.writeFile('raw.gray', gray, function(err) {
-
-                            context.log(err);
-                            context.log(stdout);
                             context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
+                                gm.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
