@@ -82,7 +82,7 @@ module.exports = function(context, myBlob) {
                             });
 
                             // Reading in raw thermal image
-                            fs.readFile(filename+"-RAW."+rawtype, (err, rawimg) => {
+                            fs.readFile(filename+"-RAW.tiff", (err, rawimg) => {
                                 if (err) {
                                     context.log(err);
                                     throw "Error reading RawThermalImage. Unsupported filetype.";
