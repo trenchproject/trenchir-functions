@@ -57,7 +57,7 @@ module.exports = function(context, myBlob) {
                     }
 
                     // Extracting raw thermal image
-                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp."+rawtype], (err) => {
+                    execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], (err) => {
                         if (err) {
                             context.log(`exec error: ${err}`);
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
@@ -66,17 +66,16 @@ module.exports = function(context, myBlob) {
 
                         context.log("exiftool step");
 
-                        im.convert([filename+"-rawtemp."+rawtype, 'gray:raw.gray'], function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'gray:raw.gray'], function(err, stdout){
                             if (err) {
                                 context.log(err);
-                                throw err;
                             }
                             context.log('stdout:', stdout);
 
                             context.log("convert 1");
 
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW."+rawtype], function(err, stdout){
+                                im.convert(['-depth', '16', 'endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
