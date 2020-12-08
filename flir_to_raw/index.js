@@ -145,7 +145,6 @@ module.exports = function(context, myBlob) {
                         if (err) throw err;
                         context.log('successfully deleted ' + filename+"-rawtemp.tiff");
                     });
-                    exit;
                 }
             });
         }
