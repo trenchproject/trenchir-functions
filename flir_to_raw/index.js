@@ -59,7 +59,7 @@ module.exports = function(context, myBlob) {
                     // Extracting raw thermal image
                     execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], (err) => {
                         if (err) {
-                            context.log(`exec error: ${err}`);
+                            context.log(err);
                         }
 
                         context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
@@ -72,7 +72,7 @@ module.exports = function(context, myBlob) {
 
                         context.log("test");
 
-                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], (err, stdout) => {
+                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], function(err, stdout){
                             if (err) {
                                 context.log(err);
                             }
@@ -143,10 +143,14 @@ module.exports = function(context, myBlob) {
                         });
                     });
                 } catch(err) {
-                    context.log("Unsupported filetype. Unable to extract necessary metadata for conversion.");
+                    context.log(err);
                     fs.unlink(filename+"."+ogtype, (err) => {
                         if (err) throw err;
                         context.log('successfully deleted ' + filename+"."+ogtype);
+                    });
+                    fs.unlink(filename+"-rawtemp.tiff", (err) => {
+                        if (err) throw err;
+                        context.log('successfully deleted ' + filename+"-rawtemp.tiff");
                     });
                 }
             });
