@@ -63,7 +63,7 @@ module.exports = function(context, myBlob) {
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
                         }
 
-                        context.log("next command: " + filename + "-rawtemp.tiff gray:raw.gray");
+                        context.log("next command: " + filename+"-rawtemp.tiff gray:-");
 
 
                         context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-rawtemp.tiff");
@@ -78,7 +78,7 @@ module.exports = function(context, myBlob) {
 
                         
 
-                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'gray:-'], function(err, stdout){
                             if (err) {
                                 context.log(err);
                             }
