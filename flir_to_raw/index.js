@@ -3,7 +3,6 @@ const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('imagemagick');
-const gm = require('gm');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -64,7 +63,7 @@ module.exports = function(context, myBlob) {
                             throw "Error extracting RawThermalImage. Unsupported filetype.";
                         }
 
-                        context.log("next command: " + filename+"-rawtemp.tiff gray:-");
+                        context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
 
                         context.log("Temp RAW file was saved to:  ", __dirname + '\\' + filename+"-rawtemp.tiff");
@@ -77,10 +76,7 @@ module.exports = function(context, myBlob) {
 
                         context.log("test");
 
-                        var writeStream = fs.createWriteStream("raw.gray");
-                            gm(filename+"-rawtemp.tiff").setFormat("gray").write(writeStream, function(error){
-                            console.log("Finished saving", error);
-                        
+                        im.convert([filename+"-rawtemp.tiff", 'raw.gray'], (err, stdout) =>{
                             if (err) {
                                 context.log(err);
                             }
