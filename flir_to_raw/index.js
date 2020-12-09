@@ -153,7 +153,7 @@ module.exports = function(context, myBlob) {
                                     context.log(vf);
                                     ffmpeg()
                                         .input(filename + "-RAW.tiff")
-                                        .output(filename + "-RGB-iron.tiff")
+                                        .save(filename + "-RGB-iron.tiff")
                                         .on('start', function(stdout, stderr) {
                                             context.log('FFmpeg started!');
                                         })
