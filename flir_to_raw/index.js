@@ -149,7 +149,7 @@ module.exports = function(context, myBlob) {
                                         throw "Error reading RawThermalImage. Unsupported filetype.";
                                     }
 
-                                    var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
+                                    var vf = '-vf curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'';
                                     context.log(vf);
                                     ffmpeg(filename + "-RAW.tiff")
                                         .inputOptions([
@@ -164,7 +164,7 @@ module.exports = function(context, myBlob) {
                                         .on('error', function(err, stdout, stderr) {
                                             context.log('Cannot process video: ' + err.message);
                                         })
-                                        .save(filename + "-RGB-iron.tiff");
+                                        .output(filename + "-RGB-iron.tiff");
 
 
                                     // Extracting embedded image
