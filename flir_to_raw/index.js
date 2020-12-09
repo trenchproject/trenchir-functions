@@ -113,9 +113,54 @@ module.exports = function(context, myBlob) {
                                                     if (err) context.log(err);
                                                     context.log('successfully deleted ' + filename+"."+ogtype);
                                                 });
-                                                fs.unlink(filename+"-RAW."+rawtype, (err) => {
+
+                                                context.done(); // End of function
+                                            });
+                                        });
+                                    });
+                                });
+                            } else if(rawtype=="TIFF" || rawtype=="tiff"){
+                                im.convert(['-depth', '16', '-endian', 'lsb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
+                                    if (err) {
+                                        console.log(err);
+                                        throw err;
+                                    }
+                                    // Reading in raw thermal image
+                                    fs.readFile(filename+"-RAW.tiff", (err, rawimg) => {
+                                        if (err) {
+                                            context.log(err);
+                                            throw "Error reading RawThermalImage. Unsupported filetype.";
+                                        }
+
+                                        // Extracting embedded image
+                                        execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
+                                            if (err) {context.log("No embedded image...");} 
+                                            else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
+                                            
+                                            // Reading in embedded image
+                                            fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
+                                                if (err) context.log(err);
+                                                else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
+
+                                                // Setting output data
+                                                context.bindings.outputembed = embeddedimg;
+                                                context.bindings.output = rawimg;
+                                                context.bindings.outputog = myBlob;
+                                                context.bindings.outputparam = metadata;
+
+                                                context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
+                                                context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
+                                                context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
+                                                
+
+                                                // Deleting local temporary files
+                                                fs.unlink(filename+"-EMBED."+embedtype, (err) => {
                                                     if (err) context.log(err);
-                                                    context.log('successfully deleted ' + filename+"."+rawtype);
+                                                    context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
+                                                });
+                                                fs.unlink(filename+"."+ogtype, (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"."+ogtype);
                                                 });
 
                                                 context.done(); // End of function
@@ -132,14 +177,6 @@ module.exports = function(context, myBlob) {
                 } catch(err) {
                     context.log(err.message);
                     context.log("Error caught");
-                    fs.unlink(filename+"."+ogtype, (err) => {
-                        if (err) throw err;
-                        context.log('successfully deleted ' + filename+"."+ogtype);
-                    });
-                    fs.unlink(filename+"-rawtemp.tiff", (err) => {
-                        if (err) throw err;
-                        context.log('successfully deleted ' + filename+"-rawtemp.tiff");
-                    });
                 }
             });
         }
