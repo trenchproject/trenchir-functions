@@ -157,7 +157,7 @@ module.exports = function(context, myBlob) {
                                     });
                                       
                                     ffmpeg.stderr.on('data', (data) => {
-                                        context.error(`stderr: ${data}`);
+                                        context.log(`stderr: ${data}`);
                                     });
                                       
                                     ffmpeg.on('close', (code) => {
