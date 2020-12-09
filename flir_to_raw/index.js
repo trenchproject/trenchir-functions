@@ -152,8 +152,9 @@ module.exports = function(context, myBlob) {
                                     var vf = '-vf curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'';
                                     context.log(vf);
                                     ffmpeg(filename + "-RAW.tiff")
-                                        .inputOptions([
+                                        .outputOptions([
                                             '-vcodec tiff',
+                                            vf,
                                             '-pix_fmt rgb48le',
                                             '-y'
                                         ])
