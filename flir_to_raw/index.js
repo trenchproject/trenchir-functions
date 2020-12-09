@@ -151,18 +151,8 @@ module.exports = function(context, myBlob) {
 
                                     var vf = '-vf curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'';
                                     context.log(vf);
-                                    ffmpeg()
-                                        .input(filename + "-RAW.tiff")
-                                        .save(filename + "-RGB-iron.tiff")
-                                        .on('start', function(stdout, stderr) {
-                                            context.log('FFmpeg started!');
-                                        })
-                                        .on('end', function(stdout, stderr) {
-                                            context.log('FFmpeg success!');
-                                        })
-                                        .on('error', function(err, stdout, stderr) {
-                                            context.log('Cannot process: ' + err.message);
-                                        });
+                                    ffmpeg(filename + "-RAW.tiff")
+                                        .save(filename + "-RGB-iron.tiff");
 
 
                                     // Extracting embedded image
