@@ -161,7 +161,7 @@ module.exports = function(context, myBlob) {
                                             '-pix_fmt rgb48le',
                                             '-y'
                                         ])
-                                        .output(filename + "-RGB-iron.tiff")
+                                        .save(filename + "-RGB-iron.tiff")
                                         .on('start', function(stdout, stderr) {
                                             context.log('FFmpeg started!');
                                         })
