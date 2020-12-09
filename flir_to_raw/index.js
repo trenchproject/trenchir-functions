@@ -2,7 +2,7 @@
 const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
-const gm = require('gm').subClass({imageMagick: true});
+const im = require('azure-imagemagick');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -66,73 +66,69 @@ module.exports = function(context, myBlob) {
 
                         context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
-                        gm(filename+"-rawtemp.tiff")
-                        .write('raw.gray', function (err) {
-                            if (err) context.log(err);
-                            context.log("writing raw.gray");
+                        im.convert([filename+"-rawtemp.tiff", 'gray:raw.gray'], function(err, stdout){
+                            context.log(err);
+                            context.log(stdout);
+                            context.log("convert 1");
+                            if(rawtype=="PNG" || rawtype=="png"){
+                                im.convert(['raw.gray', '-depth', '16', 'endian', 'msb', '-size', resolution, filename+"-RAW.tiff"], function(err, stdout){
+                                    if (err) {
+                                        console.log(err);
+                                        throw err;
+                                    }
+                                    // Reading in raw thermal image
+                                    fs.readFile(filename+"-RAW.tiff", (err, rawimg) => {
+                                        if (err) {
+                                            context.log(err);
+                                            throw "Error reading RawThermalImage. Unsupported filetype.";
+                                        }
 
-                        context.log("convert 1");
+                                        // Extracting embedded image
+                                        execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
+                                            if (err) {context.log("No embedded image...");} 
+                                            else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
+                                            
+                                            // Reading in embedded image
+                                            fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
+                                                if (err) context.log(err);
+                                                else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
 
-                        if(rawtype=="PNG" || rawtype=="png"){
-                            gm('raw.gray')
-                            .bitdepth(16)
-                            .endian('MSB')
-                            .write(filename+"-RAW.tiff", function (err) {
-                                if (err) context.log(err);
-                                context.log("writing raw");
+                                                // Setting output data
+                                                context.bindings.outputembed = embeddedimg;
+                                                context.bindings.output = rawimg;
+                                                context.bindings.outputog = myBlob;
+                                                context.bindings.outputparam = metadata;
 
-                            // Reading in raw thermal image
-                            fs.readFile(filename+"-RAW.tiff", (err, rawimg) => {
-                                if (err) {
-                                    context.log(err);
-                                    throw "Error reading RawThermalImage. Unsupported filetype.";
-                                }
+                                                context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
+                                                context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
+                                                context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
+                                                
 
-                                // Extracting embedded image
-                                execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
-                                    if (err) {context.log("No embedded image...");} 
-                                    else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
-                                    
-                                    // Reading in embedded image
-                                    fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
-                                        if (err) context.log(err);
-                                        else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
+                                                // Deleting local temporary files
+                                                fs.unlink(filename+"-EMBED."+embedtype, (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
+                                                });
+                                                fs.unlink(filename+"."+ogtype, (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"."+ogtype);
+                                                });
+                                                fs.unlink(filename+"-RAW."+rawtype, (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"."+rawtype);
+                                                });
 
-                                        // Setting output data
-                                        context.bindings.outputembed = embeddedimg;
-                                        context.bindings.output = rawimg;
-                                        context.bindings.outputog = myBlob;
-                                        context.bindings.outputparam = metadata;
-
-                                        context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
-                                        context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
-                                        context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
-                                        
-
-                                        // Deleting local temporary files
-                                        fs.unlink(filename+"-EMBED."+embedtype, (err) => {
-                                            if (err) context.log(err);
-                                            context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
+                                                context.done(); // End of function
+                                            });
                                         });
-                                        fs.unlink(filename+"."+ogtype, (err) => {
-                                            if (err) context.log(err);
-                                            context.log('successfully deleted ' + filename+"."+ogtype);
-                                        });
-                                        fs.unlink(filename+"-RAW."+rawtype, (err) => {
-                                            if (err) context.log(err);
-                                            context.log('successfully deleted ' + filename+"."+rawtype);
-                                        });
-
-                                        context.done(); // End of function
                                     });
                                 });
-                            });
+                            } else {
+                                throw "ERROR: Unrecognized raw image type.";
+                            }
                         });
-                        } else {
-                            throw "ERROR: Unrecognized raw image type.";
-                        }
+                        
                     });
-                });
                 } catch(err) {
                     context.log(err.message);
                     context.log("Error caught");
