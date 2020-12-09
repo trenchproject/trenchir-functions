@@ -151,7 +151,7 @@ module.exports = function(context, myBlob) {
                                     var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
 
                                     ffmpeg("iweiwjkkwodm")
-                                    .setFfmpegPath(ffmpegPath);
+                                    .setFfmpegPath(ffmpegPath)
                                     .save(__dirname +'/' + filename + "-RGB-iron.tiff");
                                     
 
