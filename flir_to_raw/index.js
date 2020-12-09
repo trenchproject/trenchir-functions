@@ -153,15 +153,7 @@ module.exports = function(context, myBlob) {
                                     context.log(vf);
                                     ffmpeg()
                                         .input(filename + "-RAW.tiff")
-                                        .inputOptions([
-                                            '-vcodec tiff'
-                                        ])
-                                        .outputOptions([
-                                            vf,
-                                            '-pix_fmt rgb48le',
-                                            '-y'
-                                        ])
-                                        .save(filename + "-RGB-iron.tiff")
+                                        .output(filename + "-RGB-iron.tiff")
                                         .on('start', function(stdout, stderr) {
                                             context.log('FFmpeg started!');
                                         })
@@ -170,8 +162,7 @@ module.exports = function(context, myBlob) {
                                         })
                                         .on('error', function(err, stdout, stderr) {
                                             context.log('Cannot process: ' + err.message);
-                                        })
-                                        .run();
+                                        });
 
 
                                     // Extracting embedded image
