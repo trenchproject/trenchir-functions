@@ -84,20 +84,20 @@ module.exports = function(context, myBlob) {
 
                     var emisswind = 1-irt;
                     var reflwind = 0;
-                    var h2o = (rel_humid/100)*Math.E(1.5587+0.06939*(aTemp)-0.00027816*(aTemp*aTemp)+0.00000068455*(aTemp*aTemp)); // relative humidity -> water vapour pressure
+                    var h2o = (rel_humid/100)*Math.exp(1.5587+0.06939*(aTemp)-0.00027816*(aTemp*aTemp)+0.00000068455*(aTemp*aTemp)); // relative humidity -> water vapour pressure
 
-                    var tau1 = atx*Math.E(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.E(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
-                    var tau2 = atx*Math.E(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.E(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
+                    var tau1 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
+                    var tau2 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
 
-                    var rawrefl1 = pR1/(pR2*(Math.E(pB/(rTemp+273.15))-pF))+(-1)*pO;
+                    var rawrefl1 = pR1/(pR2*(Math.exp(pB/(rTemp+273.15))-pF))+(-1)*pO;
                     var rawrefl1attn = (1-emis)/emis*rawrefl1;
-                    var rawatm1 = pR1/(pR2*(Math.E(pB/(aTemp+273.15))-pF))+(-1)*pO;
+                    var rawatm1 = pR1/(pR2*(Math.exp(pB/(aTemp+273.15))-pF))+(-1)*pO;
                     var rawatm1attn = (1-tau1)/emis/tau1*rawatm1;
-                    var rawwind = pR1/(pR2*(Math.E(pB/(irwTemp+273.15))-pF))+(-1)*pO;
+                    var rawwind = pR1/(pR2*(Math.exp(pB/(irwTemp+273.15))-pF))+(-1)*pO;
                     var rawwindattn = (emisswind/emis/tau1/irt)*rawwind;
-                    var rawrefl2 = pR1/(pR2*(Math.E(pB/(rTemp+273.15))-pF))+(-1)*pO;
+                    var rawrefl2 = pR1/(pR2*(Math.exp(pB/(rTemp+273.15))-pF))+(-1)*pO;
                     var rawrefl2attn = reflwind/emis/tau1/irt*rawrefl2;
-                    var rawatm2 = pR1/(pR2*(Math.E(pB/(aTemp+273.15))-pF))+(-1)*pO;
+                    var rawatm2 = pR1/(pR2*(Math.exp(pB/(aTemp+273.15))-pF))+(-1)*pO;
                     var rawatm2attn = (1-tau2)/emis/tau1/irt/tau2*rawatm2;
                     var rawMinObj = rawMin/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
                     var rawMaxObj = rawMax/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
