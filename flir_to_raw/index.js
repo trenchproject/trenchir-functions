@@ -150,9 +150,11 @@ module.exports = function(context, myBlob) {
                                     }
 
                                     var vf = '-vf curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'';
-                                    context.log(vf);
+
                                     ffmpeg(filename + "-RAW.tiff")
-                                        .save(filename + "-RGB-iron.tiff");
+                                        .videoCodec('tiff')
+                                        .output(filename + "-RGB-iron.tiff")
+                                        .videoCodec('tiff');
 
 
                                     // Extracting embedded image
