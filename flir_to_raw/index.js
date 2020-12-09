@@ -157,7 +157,12 @@ module.exports = function(context, myBlob) {
                                             vf,
                                             '-pix_fmt rgb48le',
                                             '-y'
-                                        ]).save(filename + "-RGB-iron.tiff");
+                                        ]).output(filename + "-RGB-iron.tiff")
+                                        .on('end', function(stdout, stderr) {
+                                            console.log('FFmpeg success!');
+                                        }).on('error', function(err, stdout, stderr) {
+                                            console.log('Cannot process video: ' + err.message);
+                                        });
 
 
                                     // Extracting embedded image
