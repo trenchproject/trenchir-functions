@@ -158,7 +158,7 @@ module.exports = function(context, myBlob) {
                                             vf,
                                             '-pix_fmt gray16le'
                                         ])
-                                        .output(filename + "-RGB-iron.tiff");
+                                        .output(filename + "-RGB-iron.tiff").run();
 
 
                                     // Extracting embedded image
