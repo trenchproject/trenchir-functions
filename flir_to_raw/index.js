@@ -162,59 +162,58 @@ module.exports = function(context, myBlob) {
                                       
                                     ffmpeg.on('close', (code) => {
                                         
-                                    
-
-
-                                    
-                                    
-
-
-                                    // Extracting embedded image
-                                    execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
-                                        if (err) {context.log("No embedded image...");} 
-                                        else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
-                                        
-                                        // Reading in embedded image
-                                        fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
-                                            if (err) context.log(err);
-                                            else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
-
-                                            // Setting output data
-                                            context.bindings.outputembed = embeddedimg;
-                                            context.bindings.output = rawimg;
-                                            context.bindings.outputog = myBlob;
-                                            context.bindings.outputparam = metadata;
-
-                                            context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
-                                            context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
-                                            context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
+                                        im.convert(['iron.png', '-resize', resize, filename+'iron.png'], function(err, stdout){
+                                            if (err) throw err;
+                                            context.log('stdout:', stdout);
                                             
+                                            // Extracting embedded image
+                                            execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
+                                                if (err) {context.log("No embedded image...");} 
+                                                else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
+                                                
+                                                // Reading in embedded image
+                                                fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
+                                                    if (err) context.log(err);
+                                                    else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
 
-                                            // Deleting local temporary files
-                                            fs.unlink(filename+"-EMBED."+embedtype, (err) => {
-                                                if (err) context.log(err);
-                                                context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
-                                            });
-                                            fs.unlink(filename+"."+ogtype, (err) => {
-                                                if (err) context.log(err);
-                                                context.log('successfully deleted ' + filename+"."+ogtype);
-                                            });
-                                            fs.unlink(filename+"-RAW.tiff", (err) => {
-                                                if (err) context.log(err);
-                                                context.log('successfully deleted ' + filename+"-RAW.tiff");
-                                            });
-                                            fs.unlink(filename+'.gray', (err) => {
-                                                if (err) context.log(err);
-                                                context.log('successfully deleted ' + filename+'.gray');
-                                            });
-                                            fs.unlink(filename+"-rawtemp.tiff", (err) => {
-                                                if (err) context.log(err);
-                                                context.log('successfully deleted ' + filename+"-rawtemp.tiff");
-                                            });
+                                                    // Setting output data
+                                                    context.bindings.outputembed = embeddedimg;
+                                                    context.bindings.output = rawimg;
+                                                    context.bindings.outputog = myBlob;
+                                                    context.bindings.outputparam = metadata;
 
-                                            context.done(); // End of function
+                                                    context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
+                                                    context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
+                                                    context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
+                                                    
+
+                                                    // Deleting local temporary files
+                                                    fs.unlink(filename+"-EMBED."+embedtype, (err) => {
+                                                        if (err) context.log(err);
+                                                        context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
+                                                    });
+                                                    fs.unlink(filename+"."+ogtype, (err) => {
+                                                        if (err) context.log(err);
+                                                        context.log('successfully deleted ' + filename+"."+ogtype);
+                                                    });
+                                                    fs.unlink(filename+"-RAW.tiff", (err) => {
+                                                        if (err) context.log(err);
+                                                        context.log('successfully deleted ' + filename+"-RAW.tiff");
+                                                    });
+                                                    fs.unlink(filename+'.gray', (err) => {
+                                                        if (err) context.log(err);
+                                                        context.log('successfully deleted ' + filename+'.gray');
+                                                    });
+                                                    fs.unlink(filename+"-rawtemp.tiff", (err) => {
+                                                        if (err) context.log(err);
+                                                        context.log('successfully deleted ' + filename+"-rawtemp.tiff");
+                                                    });
+
+                                                    context.done(); // End of function
+                                                });
+                                            });
                                         });
-                                    });});
+                                    });
                                 });
                             });
                         });
