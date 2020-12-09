@@ -4,7 +4,7 @@ const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('azure-imagemagick');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
-const ffmpeg = require('fluent-ffmpeg');
+const spawn = require('child_process').spawn;
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -148,11 +148,22 @@ module.exports = function(context, myBlob) {
                                         throw "Error reading RawThermalImage. Unsupported filetype.";
                                     }
 
-                                    var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
+                                    var vf = '\"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
+                                    var args = ['-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'rgb48le', filename+"-RGB-iron.tiff", '-y'];
+                                    var ffmpeg = spawn(ffmpegPath, args);
 
-                                    ffmpeg("iweiwjkkwodm")
-                                    .setFfmpegPath(ffmpegPath)
-                                    .save(__dirname +'/' + filename + "-RGB-iron.tiff");
+                                    ffmpeg.stdout.on('data', (data) => {
+                                        context.log(`stdout: ${data}`);
+                                    });
+                                      
+                                    ffmpeg.stderr.on('data', (data) => {
+                                        context.error(`stderr: ${data}`);
+                                    });
+                                      
+                                    ffmpeg.on('close', (code) => {
+                                        context.log(`child process exited with code ${code}`);
+                                    });
+                                    
                                     
 
 
