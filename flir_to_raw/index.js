@@ -170,7 +170,7 @@ module.exports = function(context, myBlob) {
                                                 if (err) throw err;
                                                 context.log('stdout:', stdout); 
 
-                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+10+5', tMax.toString(), '-gravity', 'SouthEast', '-annotate', '+10+5', tMin.toString(), filename+'-RGB-iron.tiff'], function(err, stdout){
+                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+10+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+10+5', tmax_label, filename+'-RGB-iron.tiff'], function(err, stdout){
                                                     if (err) throw err;
                                                     context.log('stdout:', stdout);
 
@@ -196,7 +196,7 @@ module.exports = function(context, myBlob) {
                                                                 context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
                                                                 context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
                                                                 context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
-                                                                context.log("Iron file successful upload to:      /param/IRON-"+filename+".tiff");
+                                                                context.log("Iron file successful upload to:      /iron/IRON-"+filename+".tiff");
                                                                 
 
                                                                 // Deleting local temporary files
@@ -217,6 +217,14 @@ module.exports = function(context, myBlob) {
                                                                     context.log('successfully deleted ' + filename+'.gray');
                                                                 });
                                                                 fs.unlink(filename+"-rawtemp.tiff", (err) => {
+                                                                    if (err) context.log(err);
+                                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
+                                                                });
+                                                                fs.unlink(filename+'-iron.png', (err) => {
+                                                                    if (err) context.log(err);
+                                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
+                                                                });
+                                                                fs.unlink(filename+"-RGB-iron.tiff", (err) => {
                                                                     if (err) context.log(err);
                                                                     context.log('successfully deleted ' + filename+"-rawtemp.tiff");
                                                                 });
