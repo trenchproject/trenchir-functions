@@ -113,6 +113,18 @@ module.exports = function(context, myBlob) {
                                                     if (err) context.log(err);
                                                     context.log('successfully deleted ' + filename+"."+ogtype);
                                                 });
+                                                fs.unlink(filename+"-RAW.tiff", (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"-RAW.tiff");
+                                                });
+                                                fs.unlink('raw.gray', (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted raw.gray');
+                                                });
+                                                fs.unlink(filename+"-rawtemp.tiff", (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
+                                                });
 
                                                 context.done(); // End of function
                                             });
@@ -161,6 +173,18 @@ module.exports = function(context, myBlob) {
                                                 fs.unlink(filename+"."+ogtype, (err) => {
                                                     if (err) context.log(err);
                                                     context.log('successfully deleted ' + filename+"."+ogtype);
+                                                });
+                                                fs.unlink(filename+"-RAW.tiff", (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"-RAW.tiff");
+                                                });
+                                                fs.unlink('raw.gray', (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted raw.gray');
+                                                });
+                                                fs.unlink(filename+"-rawtemp.tiff", (err) => {
+                                                    if (err) context.log(err);
+                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
                                                 });
 
                                                 context.done(); // End of function
