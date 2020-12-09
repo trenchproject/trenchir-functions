@@ -151,18 +151,21 @@ module.exports = function(context, myBlob) {
 
                                     var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
 
-                                    var command = ffmpeg(filename + "-RAW.tiff")
+                                    var outStream = fs.createWriteStream(filename + "-RGB-iron.tiff");
+                                    ffmpeg(filename + "-RAW.tiff")
                                         .inputOptions([
                                             '-vcodec tiff',
                                             vf,
                                             '-pix_fmt rgb48le',
                                             '-y'
-                                        ]).output(filename + "-RGB-iron.tiff")
+                                        ])
                                         .on('end', function(stdout, stderr) {
                                             console.log('FFmpeg success!');
-                                        }).on('error', function(err, stdout, stderr) {
+                                        })
+                                        .on('error', function(err, stdout, stderr) {
                                             console.log('Cannot process video: ' + err.message);
-                                        });
+                                        })
+                                        .pipe(outStream, { end: true });
 
 
                                     // Extracting embedded image
