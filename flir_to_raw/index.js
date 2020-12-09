@@ -143,7 +143,7 @@ module.exports = function(context, myBlob) {
                                     throw err;
                                 }
                                 // Reading in raw thermal image
-                                fs.readFile(filename+"-RAW.tiff", (err, rawimg) => {
+                                fs.readFile(filename+"-RAW.tiff", (err, rawimg)  => {
                                     if (err) {
                                         context.log(err);
                                         throw "Error reading RawThermalImage. Unsupported filetype.";
@@ -151,14 +151,13 @@ module.exports = function(context, myBlob) {
 
                                     var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
 
-                                    let command = ffmpeg(filename+"-RAW.tiff")
-                                    .inputOptions([
-                                        '-loglevel quiet',
-                                        '-vcodec tiff',
-                                        vf, 
-                                        '-pix_fmt rgb48le',
-                                        '-y'
-                                    ]).save(filename+"-RGB-iron.tiff");
+                                    var command = ffmpeg(filename + "-RAW.tiff")
+                                        .inputOptions([
+                                            '-vcodec tiff',
+                                            vf,
+                                            '-pix_fmt rgb48le',
+                                            '-y'
+                                        ]).save(filename + "-RGB-iron.tiff");
 
 
                                     // Extracting embedded image
