@@ -148,7 +148,7 @@ module.exports = function(context, myBlob) {
                                         throw "Error reading RawThermalImage. Unsupported filetype.";
                                     }
 
-                                    var vf = '\"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
+                                    var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'';
                                     var args = ['-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'rgb48le', filename+"-RGB-iron.tiff", '-y'];
                                     var ffmpeg = spawn(ffmpegPath, args);
 
