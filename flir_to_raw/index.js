@@ -107,6 +107,7 @@ module.exports = function(context, myBlob) {
                     var raw75obj = raw75/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
     
                     var tMin = pB/Math.log(pR1/(pR2*(rawMinObj+pO))+pF)-273.15;
+                    context.log('pb: ',pB,' pr1: ',pR1,' rawMinObj: ',rawMinObj,' p0: ',pO,' pF: ',pF,' tMin: ',tMin);
                     var tMax = pB/Math.log(pR1/(pR2*(rawMaxObj+pO))+pF)-273.15;
 
                     var padding = rawwidth+70;
@@ -170,7 +171,7 @@ module.exports = function(context, myBlob) {
                                                 if (err) throw err;
                                                 context.log('stdout:', stdout); 
 
-                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+10+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+10+5', tmax_label, filename+'-RGB-iron.tiff'], function(err, stdout){
+                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+10+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+10+5', tmin_label, filename+'-RGB-iron.tiff'], function(err, stdout){
                                                     if (err) throw err;
                                                     context.log('stdout:', stdout);
 
