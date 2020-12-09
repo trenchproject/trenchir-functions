@@ -149,7 +149,7 @@ module.exports = function(context, myBlob) {
                                     }
 
                                     var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'';
-                                    var args = ['-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'rgb48le', filename+"-RGB-iron.tiff", '-y'];
+                                    var args = ['-loglevel', 'quiet', '-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'rgb48le', filename+"-RGB-iron.tiff", '-y'];
                                     var ffmpeg = spawn(ffmpegPath, args);
 
                                     ffmpeg.stdout.on('data', (data) => {
@@ -161,8 +161,10 @@ module.exports = function(context, myBlob) {
                                     });
                                       
                                     ffmpeg.on('close', (code) => {
-                                        context.log(`child process exited with code ${code}`);
-                                    });
+                                        
+                                    
+
+
                                     
                                     
 
@@ -212,7 +214,7 @@ module.exports = function(context, myBlob) {
 
                                             context.done(); // End of function
                                         });
-                                    });
+                                    });});
                                 });
                             });
                         });
