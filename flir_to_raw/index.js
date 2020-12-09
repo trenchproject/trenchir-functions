@@ -100,6 +100,7 @@ module.exports = function(context, myBlob) {
                     var rawrefl2attn = reflwind/emis/tau1/irt*rawrefl2;
                     var rawatm2 = pR1/(pR2*(Math.exp(pB/(aTemp+273.15))-pF))+(-1)*pO;
                     var rawatm2attn = (1-tau2)/emis/tau1/irt/tau2*rawatm2;
+                    context.log('rawMin: ',rawMin,' emis: ',emis,' tau1: ',tau1,' irt: ',irt,' tau2: ',tau2,' rawatm1attn: ',rawatm1attn,' rawatm2attn: ',rawatm2attn,' rawwindattn: ',rawwindattn,' rawrefl1attn: ',rawrefl1attn,' rawrefl2attn: ',rawrefl2attn);
                     var rawMinObj = rawMin/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
                     var rawMaxObj = rawMax/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
                     var raw25obj = raw25/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
@@ -107,7 +108,6 @@ module.exports = function(context, myBlob) {
                     var raw75obj = raw75/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
     
                     var tMin = pB/Math.log(pR1/(pR2*(rawMinObj+pO))+pF)-273.15;
-                    context.log('pb: ',pB,' pr1: ',pR1,' rawMinObj: ',rawMinObj,' p0: ',pO,' pF: ',pF,' tMin: ',tMin);
                     var tMax = pB/Math.log(pR1/(pR2*(rawMaxObj+pO))+pF)-273.15;
 
                     var padding = rawwidth+70;
