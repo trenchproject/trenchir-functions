@@ -66,12 +66,12 @@ module.exports = function(context, myBlob) {
 
                         context.log("next command: " + filename + "-rawtemp.tiff raw.gray");
 
-                        im.convert([filename+"-rawtemp.tiff", 'gray:raw.gray'], function(err, stdout){
+                        im.convert([filename+"-rawtemp.tiff", 'gray:'+filename+'.gray'], function(err, stdout){
                             context.log(err);
                             context.log(stdout);
                             context.log("convert 1");
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert(['-depth', '16', '-endian', 'msb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
+                                im.convert(['-depth', '16', '-endian', 'msb', '-size', resolution, filename+'.gray', filename+"-RAW.tiff"], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
@@ -117,9 +117,9 @@ module.exports = function(context, myBlob) {
                                                     if (err) context.log(err);
                                                     context.log('successfully deleted ' + filename+"-RAW.tiff");
                                                 });
-                                                fs.unlink('raw.gray', (err) => {
+                                                fs.unlink(filename+'.gray', (err) => {
                                                     if (err) context.log(err);
-                                                    context.log('successfully deleted raw.gray');
+                                                    context.log('successfully deleted ' + filename+'.gray');
                                                 });
                                                 fs.unlink(filename+"-rawtemp.tiff", (err) => {
                                                     if (err) context.log(err);
@@ -132,7 +132,7 @@ module.exports = function(context, myBlob) {
                                     });
                                 });
                             } else if(rawtype=="TIFF" || rawtype=="tiff"){
-                                im.convert(['-depth', '16', '-endian', 'lsb', '-size', resolution, 'raw.gray', filename+"-RAW.tiff"], function(err, stdout){
+                                im.convert(['-depth', '16', '-endian', 'lsb', '-size', resolution, filename+'.gray', filename+"-RAW.tiff"], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
@@ -178,9 +178,9 @@ module.exports = function(context, myBlob) {
                                                     if (err) context.log(err);
                                                     context.log('successfully deleted ' + filename+"-RAW.tiff");
                                                 });
-                                                fs.unlink('raw.gray', (err) => {
+                                                fs.unlink(filename+'.gray', (err) => {
                                                     if (err) context.log(err);
-                                                    context.log('successfully deleted raw.gray');
+                                                    context.log('successfully deleted ' + filename+'.gray');
                                                 });
                                                 fs.unlink(filename+"-rawtemp.tiff", (err) => {
                                                     if (err) context.log(err);
