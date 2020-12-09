@@ -154,15 +154,17 @@ module.exports = function(context, myBlob) {
                                     ffmpeg(filename + "-RAW.tiff")
                                         .inputOptions([
                                             '-vcodec tiff',
-                                            vf,
                                             '-pix_fmt rgb48le',
                                             '-y'
                                         ])
+                                        .on('start', function(stdout, stderr) {
+                                            context.log('FFmpeg started!');
+                                        })
                                         .on('end', function(stdout, stderr) {
                                             context.log('FFmpeg success!');
                                         })
                                         .on('error', function(err, stdout, stderr) {
-                                            context.log('Cannot process video: ' + err.message);
+                                            context.log('Cannot process: ' + err.message);
                                         })
                                         .save(filename + "-RGB-iron.tiff");
 
