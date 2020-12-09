@@ -17,6 +17,7 @@
     "dist-exiftool": "",
     "fs": "",
     "@ffmpeg-installer/ffmpeg": "",
+    "fluent-ffmpeg":"",
     "@azure/storage-blob": "",
     "azure-imagemagick":""
   }
