@@ -85,9 +85,9 @@ module.exports = function(context, myBlob) {
 
                     var emisswind = 1-irt;
                     var reflwind = 0;
+                    context.log('rel_humid: ',rel_humid,' aTemp: ',aTemp);
                     var h2o = (rel_humid/100)*Math.exp(1.5587+0.06939*(aTemp)-0.00027816*(aTemp*aTemp)+0.00000068455*(aTemp*aTemp)); // relative humidity -> water vapour pressure
 
-                    context.log('atx: ',atx,' od: ',od,' ata1: ',ata1,' atb1: ',atb1,' h2o: ',h2o,' ata2: ',ata2,' atb2: ',atb2);
                     var tau1 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
                     var tau2 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
 
