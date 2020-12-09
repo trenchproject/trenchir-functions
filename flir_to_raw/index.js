@@ -87,6 +87,7 @@ module.exports = function(context, myBlob) {
                     var reflwind = 0;
                     var h2o = (rel_humid/100)*Math.exp(1.5587+0.06939*(aTemp)-0.00027816*(aTemp*aTemp)+0.00000068455*(aTemp*aTemp)); // relative humidity -> water vapour pressure
 
+                    context.log('atx: ',atx,' od: ',od,' ata1: ',ata1,' atb1: ',atb1,' h2o: ',h2o,' ata2: ',ata2,' atb2: ',atb2);
                     var tau1 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
                     var tau2 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
 
@@ -100,7 +101,6 @@ module.exports = function(context, myBlob) {
                     var rawrefl2attn = reflwind/emis/tau1/irt*rawrefl2;
                     var rawatm2 = pR1/(pR2*(Math.exp(pB/(aTemp+273.15))-pF))+(-1)*pO;
                     var rawatm2attn = (1-tau2)/emis/tau1/irt/tau2*rawatm2;
-                    context.log('rawMin: ',rawMin,' emis: ',emis,' tau1: ',tau1,' irt: ',irt,' tau2: ',tau2,' rawatm1attn: ',rawatm1attn,' rawatm2attn: ',rawatm2attn,' rawwindattn: ',rawwindattn,' rawrefl1attn: ',rawrefl1attn,' rawrefl2attn: ',rawrefl2attn);
                     var rawMinObj = rawMin/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
                     var rawMaxObj = rawMax/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
                     var raw25obj = raw25/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
