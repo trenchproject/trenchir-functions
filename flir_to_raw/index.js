@@ -71,7 +71,7 @@ module.exports = function(context, myBlob) {
                             context.log(stdout);
                             context.log("convert 1");
                             if(rawtype=="PNG" || rawtype=="png"){
-                                im.convert(['raw.gray', '-depth', '16', 'endian', 'msb', '-size', resolution, filename+"-RAW.tiff"], function(err, stdout){
+                                im.convert(['raw.gray', '-depth', '16', '-endian', 'msb', '-size', resolution, filename+"-RAW.tiff"], function(err, stdout){
                                     if (err) {
                                         console.log(err);
                                         throw err;
