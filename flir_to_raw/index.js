@@ -164,7 +164,7 @@ module.exports = function(context, myBlob) {
                                         .on('error', function(err, stdout, stderr) {
                                             context.log('Cannot process video: ' + err.message);
                                         })
-                                        .output(filename + "-RGB-iron.tiff");
+                                        .save(filename + "-RGB-iron.tiff");
 
 
                                     // Extracting embedded image
