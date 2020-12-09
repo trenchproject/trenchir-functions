@@ -3,6 +3,7 @@ const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('azure-imagemagick');
+const ffmpeg = require('fluent-ffmpeg');
 
 // Function triggered by new blob in "uploads" folder
 module.exports = function(context, myBlob) {
@@ -34,15 +35,14 @@ module.exports = function(context, myBlob) {
                 try{ 
                     var metadata = JSON.parse(stdout);
                     metadata = metadata[0];
-                    context.log("metadata raw thermal image type: " + metadata.RawThermalImageType);
-                    context.log("metadata og image type: " + ogtype);
 
+                    var bitrange = 65536;
                     var embedtype = metadata.EmbeddedImageType;
                     var pR1 = metadata.PlanckR1;
-                    var rawwidth = metadata.RawThermalImageWidth;
-                    var rawheight = metadata.RawThermalImageHeight;
-                    var rawtype = metadata.RawThermalImageType;
-                    var resolution = rawwidth.toString()+"x"+rawheight.toString();
+                    var pR2 = metadata.PlanckR2;
+                    var pB = metadata.PlanckB;
+                    var pO = metadata.PlanckO;
+                    var pF = metadata.PlanckF;
 
                     // Ends function if no planck constants
                     if(!pR1){ 
@@ -54,6 +54,66 @@ module.exports = function(context, myBlob) {
                         blockBlobClient.delete();
                         throw "Unsupported filetype. Unable to extract necessary metadata for conversion, no planck constants.";
                     }
+
+                    var rawwidth = metadata.RawThermalImageWidth;
+                    var rawheight = metadata.RawThermalImageHeight;
+                    var rawtype = metadata.RawThermalImageType;
+                    var resolution = rawwidth.toString()+"x"+rawheight.toString();
+                    var range = metadata.RawValueRange;
+                    var median = metadata.RawValueMedian;
+                    var halfRange = range/2;
+                    var rawMin = median-halfRange;
+                    var rawMax = median+halfRange;
+                    var raw25 = (0.25 * (rawMax - rawMin)) + rawMin;
+                    var raw50 = (0.5 * (rawMax - rawMin)) + rawMin;
+                    var raw75 = (0.75 * (rawMax - rawMin)) + rawMin;
+                    var scaleMin = 1*rawMin/bitrange;
+                    var scaleMax = 1*rawMax/bitrange;
+                    var emis = metadata.Emissivity;
+                    var rel_humid = metadata.RelativeHumidity;
+                    var aTemp = metadata.AtmosphericTemperature;
+                    var rTemp = metadata.ReflectedApparentTemperature;
+                    var irwTemp = metadata.IRWindowTemperature;
+                    var irt = metadata.IRWindowTransmission;
+                    var od = metadata.ObjectDistance;
+                    var ata1 = metadata.AtmosphericTransAlpha1;
+                    var ata2 = metadata.AtmosphericTransAlpha2;
+                    var atb1 = metadata.AtmosphericTransBeta1;
+                    var atb2 = metadata.AtmosphericTransBeta2;
+                    var atx = metadata.AtmosphericTransX;
+
+                    var emisswind = 1-irt;
+                    var reflwind = 0;
+                    var h2o = (rel_humid/100)*E(1.5587+0.06939*(aTemp)-0.00027816*(aTemp*aTemp)+0.00000068455*(aTemp*aTemp)); // relative humidity -> water vapour pressure
+
+                    var tau1 = atx*E(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*E(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
+                    var tau2 = atx*E(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*E(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
+
+                    var rawrefl1 = pR1/(pR2*(E(pB/(rTemp+273.15))-pF))+(-1)*pO;
+                    var rawrefl1attn = (1-emis)/emis*rawrefl1;
+                    var rawatm1 = pR1/(pR2*(E(pB/(aTemp+273.15))-pF))+(-1)*pO;
+                    var rawatm1attn = (1-tau1)/emis/tau1*rawatm1;
+                    var rawwind = pR1/(pR2*(E(pB/(irwTemp+273.15))-pF))+(-1)*pO;
+                    var rawwindattn = (emisswind/emis/tau1/irt)*rawwind;
+                    var rawrefl2 = pR1/(pR2*(E(pB/(rTemp+273.15))-pF))+(-1)*pO;
+                    var rawrefl2attn = reflwind/emis/tau1/irt*rawrefl2;
+                    var rawatm2 = pR1/(pR2*(E(pB/(aTemp+273.15))-pF))+(-1)*pO;
+                    var rawatm2attn = (1-tau2)/emis/tau1/irt/tau2*rawatm2;
+                    var rawMinObj = rawMin/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
+                    var rawMaxObj = rawMax/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
+                    var raw25obj = raw25/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
+                    var raw50obj = raw50/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
+                    var raw75obj = raw75/emis/tau1/irt/tau2+(-1)*rawatm1attn+(-1)*rawatm2attn+(-1)*rawwindattn+(-1)*rawrefl1attn+(-1)*rawrefl2attn;
+    
+                    var tMin = pB/Math.log(pR1/(pR2*(rawMinObj+pO))+pF)-273.15;
+                    var tMax = pB/Math.log(pR1/(pR2*(rawMaxObj+pO))+pF)-273.15;
+
+                    var padding = rawwidth+70;
+                    var height = rawheight+10;
+                    var heightColorBar = rawheight-40;
+                    var resize = "18x"+heightColorBar.toString()+"!";
+                    var tmax_label = tMax.toString() + " deg"
+                    var tmin_label = tMin.toString() + " deg"
 
                     // Extracting raw thermal image
                     execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], (err) => {
@@ -86,6 +146,17 @@ module.exports = function(context, myBlob) {
                                         context.log(err);
                                         throw "Error reading RawThermalImage. Unsupported filetype.";
                                     }
+
+                                    var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
+
+                                    ffmpeg(filename+"-RAW.tiff").inputOptions([
+                                        '-loglevel quiet',
+                                        '-vcodec tiff',
+                                        vf, 
+                                        '-pix_fmt rgb48le',
+                                        '-y'
+                                    ]).save(filename+"-RGB-iron.tiff");
+
 
                                     // Extracting embedded image
                                     execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
