@@ -39,6 +39,14 @@
       "direction": "out",
       "path": "embedded/EMBED-{name}",
       "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outputiron",
+      "type": "blob",
+      "datatype": "binary",
+      "direction": "out",
+      "path": "iron/IRON-{name}.tiff",
+      "connection": "AzureWebJobsStorage"
     }
   ]
 }
