@@ -3,6 +3,7 @@ const execFile = require('child_process').execFile;
 const exiftool = require('dist-exiftool');
 const fs = require('fs');
 const im = require('azure-imagemagick');
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 
 // Function triggered by new blob in "uploads" folder
@@ -149,7 +150,9 @@ module.exports = function(context, myBlob) {
 
                                     var vf = '-vf \"curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Ironbow.cube\'\"';
 
-                                    ffmpeg(filename+"-RAW.tiff").inputOptions([
+                                    let command = ffmpeg(filename+"-RAW.tiff")
+                                    .setFfmpegPath(ffmpegPath)
+                                    .inputOptions([
                                         '-loglevel quiet',
                                         '-vcodec tiff',
                                         vf, 
