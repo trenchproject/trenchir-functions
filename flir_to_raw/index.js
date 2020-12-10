@@ -71,12 +71,12 @@ module.exports = function(context, myBlob) {
                     var scaleMin = 1*rawMin/bitrange;
                     var scaleMax = 1*rawMax/bitrange;
                     var emis = metadata.Emissivity;
-                    var rel_humid = metadata.RelativeHumidity;
-                    var aTemp = metadata.AtmosphericTemperature;
-                    var rTemp = metadata.ReflectedApparentTemperature;
-                    var irwTemp = metadata.IRWindowTemperature;
+                    var rel_humid = metadata.RelativeHumidity.parseFloat();
+                    var aTemp = metadata.AtmosphericTemperature.parseFloat();
+                    var rTemp = metadata.ReflectedApparentTemperature.parseFloat();
+                    var irwTemp = metadata.IRWindowTemperature.parseFloat();
                     var irt = metadata.IRWindowTransmission;
-                    var od = metadata.ObjectDistance;
+                    var od = metadata.ObjectDistance.parseFloat();
                     var ata1 = metadata.AtmosphericTransAlpha1;
                     var ata2 = metadata.AtmosphericTransAlpha2;
                     var atb1 = metadata.AtmosphericTransBeta1;
@@ -85,7 +85,6 @@ module.exports = function(context, myBlob) {
 
                     var emisswind = 1-irt;
                     var reflwind = 0;
-                    context.log('rel_humid: ',rel_humid,' aTemp: ',aTemp);
                     var h2o = (rel_humid/100)*Math.exp(1.5587+0.06939*(aTemp)-0.00027816*(aTemp*aTemp)+0.00000068455*(aTemp*aTemp)); // relative humidity -> water vapour pressure
 
                     var tau1 = atx*Math.exp(-Math.sqrt(od/2)*(ata1+atb1*Math.sqrt(h2o)))+(1-atx)*Math.exp(-Math.sqrt(od/2)*(ata2+atb2*Math.sqrt(h2o)));
