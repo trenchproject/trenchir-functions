@@ -167,11 +167,11 @@ module.exports = function(context, myBlob) {
                                                 if (err) throw err;
                                                 context.log('stdout:', stdout); 
 
-                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-iron.tiff'], function(err, stdout){
+                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-iron.jpg'], function(err, stdout){
                                                     if (err) throw err;
                                                     context.log('stdout:', stdout);
 
-                                                    fs.readFile(filename+'-RGB-iron.tiff', (err, ironimg) => {
+                                                    fs.readFile(filename+'-RGB-iron.jpg', (err, ironimg) => {
 
                                                         var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Rainbow.cube\'';
                                                         var args = ['-loglevel', 'quiet', '-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'rgb48le', filename+"-RGB-rain.tiff", '-y'];
@@ -195,11 +195,11 @@ module.exports = function(context, myBlob) {
                                                                     if (err) throw err;
                                                                     context.log('stdout:', stdout); 
                     
-                                                                    im.convert([filename+'-RGB-rain.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-rain.tiff'], function(err, stdout){
+                                                                    im.convert([filename+'-RGB-rain.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-rain.jpg'], function(err, stdout){
                                                                         if (err) throw err;
                                                                         context.log('stdout:', stdout);
                     
-                                                                        fs.readFile(filename+'-RGB-rain.tiff', (err, rainimg) => {
+                                                                        fs.readFile(filename+'-RGB-rain.jpg', (err, rainimg) => {
 
                                                                             var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black';
                                                                             var args = ['-loglevel', 'quiet', '-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'gray16le', filename+"-RGB-grey.tiff", '-y'];
@@ -223,11 +223,11 @@ module.exports = function(context, myBlob) {
                                                                                         if (err) throw err;
                                                                                         context.log('stdout:', stdout); 
                                         
-                                                                                        im.convert([filename+'-RGB-grey.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-grey.tiff'], function(err, stdout){
+                                                                                        im.convert([filename+'-RGB-grey.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-grey.jpg'], function(err, stdout){
                                                                                             if (err) throw err;
                                                                                             context.log('stdout:', stdout);
                                         
-                                                                                            fs.readFile(filename+'-RGB-grey.tiff', (err, greyimg) => {
+                                                                                            fs.readFile(filename+'-RGB-grey.jpg', (err, greyimg) => {
 
                                                                                                 // Extracting embedded image
                                                                                                 execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
