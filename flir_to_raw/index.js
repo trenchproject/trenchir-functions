@@ -113,8 +113,8 @@ module.exports = function(context, myBlob) {
                     var height = rawheight+10;
                     var heightColorBar = rawheight-40;
                     var resize = "18x"+heightColorBar.toString()+"!";
-                    var tmax_label = tMax.toString() + " deg"
-                    var tmin_label = tMin.toString() + " deg"
+                    var tmax_label = tMax.toFixed(2) + " deg";
+                    var tmin_label = tMin.toFixed(2) + " deg"
 
                     // Extracting raw thermal image
                     execFile(exiftool, [filename+"."+ogtype, '-b', '-RawThermalImage', '-w', "-rawtemp.tiff"], (err) => {
