@@ -170,66 +170,118 @@ module.exports = function(context, myBlob) {
                                                 if (err) throw err;
                                                 context.log('stdout:', stdout); 
 
-                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+10+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+10+5', tmin_label, filename+'-RGB-iron.tiff'], function(err, stdout){
+                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-iron.tiff'], function(err, stdout){
                                                     if (err) throw err;
                                                     context.log('stdout:', stdout);
 
                                                     fs.readFile(filename+'-RGB-iron.tiff', (err, ironimg) => {
 
-                                                        // Extracting embedded image
-                                                        execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
-                                                            if (err) {context.log("No embedded image...");} 
-                                                            else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
-                                                            
-                                                            // Reading in embedded image
-                                                            fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
-                                                                if (err) context.log(err);
-                                                                else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
+                                                        var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Rainbow.cube\'';
+                                                        var args = ['-loglevel', 'quiet', '-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'rgb48le', filename+"-RGB-rain.tiff", '-y'];
+                                                        var ffmpeg = spawn(ffmpegPath, args);
 
-                                                                // Setting output data
-                                                                context.bindings.outputembed = embeddedimg;
-                                                                context.bindings.output = rawimg;
-                                                                context.bindings.outputog = myBlob;
-                                                                context.bindings.outputparam = metadata;
-                                                                context.bindings.outputiron = ironimg;
+                                                        ffmpeg.stdout.on('data', (data) => {
+                                                            context.log(`stdout: ${data}`);
+                                                        });
+                                                        
+                                                        ffmpeg.stderr.on('data', (data) => {
+                                                            context.log(`stderr: ${data}`);
+                                                        });
+                                                        
+                                                        ffmpeg.on('close', (code) => {
 
-                                                                context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
-                                                                context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
-                                                                context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
-                                                                context.log("Iron file successful upload to:      /iron/IRON-"+filename+".tiff");
-                                                                
+                                                            im.convert(['rain.png', '-resize', resize, filename+'-rain.png'], function(err, stdout){
+                                                                if (err) throw err;
+                                                                context.log('stdout:', stdout);
+                    
+                                                                im.convert([filename+'-RGB-rain.tiff', filename+'-rain.png', '-gravity', 'East', '-geometry', '+25+0', '-composite', filename+'-RGB-rain.tiff'], function(err, stdout){
+                                                                    if (err) throw err;
+                                                                    context.log('stdout:', stdout); 
+                    
+                                                                    im.convert([filename+'-RGB-rain.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-rain.tiff'], function(err, stdout){
+                                                                        if (err) throw err;
+                                                                        context.log('stdout:', stdout);
+                    
+                                                                        fs.readFile(filename+'-RGB-rain.tiff', (err, rainimg) => {
 
-                                                                // Deleting local temporary files
-                                                                fs.unlink(filename+"-EMBED."+embedtype, (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+"-EMBED."+embedtype);
-                                                                });
-                                                                fs.unlink(filename+"."+ogtype, (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+"."+ogtype);
-                                                                });
-                                                                fs.unlink(filename+"-RAW.tiff", (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+"-RAW.tiff");
-                                                                });
-                                                                fs.unlink(filename+'.gray', (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+'.gray');
-                                                                });
-                                                                fs.unlink(filename+"-rawtemp.tiff", (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
-                                                                });
-                                                                fs.unlink(filename+'-iron.png', (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
-                                                                });
-                                                                fs.unlink(filename+"-RGB-iron.tiff", (err) => {
-                                                                    if (err) context.log(err);
-                                                                    context.log('successfully deleted ' + filename+"-rawtemp.tiff");
-                                                                });
+                                                                            var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Greyscale.cube\'';
+                                                                            var args = ['-loglevel', 'quiet', '-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'gray16le', filename+"-RGB-grey.tiff", '-y'];
+                                                                            var ffmpeg = spawn(ffmpegPath, args);
 
-                                                                context.done(); // End of function
+                                                                            ffmpeg.stdout.on('data', (data) => {
+                                                                                context.log(`stdout: ${data}`);
+                                                                            });
+                                                                            
+                                                                            ffmpeg.stderr.on('data', (data) => {
+                                                                                context.log(`stderr: ${data}`);
+                                                                            });
+                                                                            
+                                                                            ffmpeg.on('close', (code) => {
+
+                                                                                im.convert(['grey.png', '-resize', resize, filename+'-grey.png'], function(err, stdout){
+                                                                                    if (err) throw err;
+                                                                                    context.log('stdout:', stdout);
+                                        
+                                                                                    im.convert([filename+'-RGB-grey.tiff', filename+'-grey.png', '-gravity', 'East', '-geometry', '+25+0', '-composite', filename+'-RGB-grey.tiff'], function(err, stdout){
+                                                                                        if (err) throw err;
+                                                                                        context.log('stdout:', stdout); 
+                                        
+                                                                                        im.convert([filename+'-RGB-grey.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+7+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+7+5', tmin_label, filename+'-RGB-grey.tiff'], function(err, stdout){
+                                                                                            if (err) throw err;
+                                                                                            context.log('stdout:', stdout);
+                                        
+                                                                                            fs.readFile(filename+'-RGB-grey.tiff', (err, greyimg) => {
+
+                                                                                                // Extracting embedded image
+                                                                                                execFile(exiftool, [filename+"."+ogtype, '-b', '-EmbeddedImage', '-w', "-EMBED."+embedtype], (error, stdout, stderr) => {
+                                                                                                    if (err) {context.log("No embedded image...");} 
+                                                                                                    else     {context.log("Temp embed file was saved to:", __dirname + '\\' + filename+"-EMBED."+embedtype);}
+                                                                                                    
+                                                                                                    // Reading in embedded image
+                                                                                                    fs.readFile(filename+"-EMBED."+embedtype, (err, embeddedimg) => {
+                                                                                                        if (err) context.log(err);
+                                                                                                        else context.log("Embedded file successful upload to:  /embed/EMBED-"+filename+"."+ogtype);
+
+                                                                                                        // Setting output data
+                                                                                                        context.bindings.outputembed = embeddedimg;
+                                                                                                        context.bindings.output = rawimg;
+                                                                                                        context.bindings.outputog = myBlob;
+                                                                                                        context.bindings.outputparam = metadata;
+                                                                                                        context.bindings.outputiron = ironimg;
+                                                                                                        context.bindings.outputrain = rainimg;
+                                                                                                        context.bindings.outputgrey = greyimg;
+
+                                                                                                        context.log("Original file successful upload to:  /originals/"+filename+"."+ogtype);
+                                                                                                        context.log("RAW file successful upload to:       /raw/RAW-"+filename+"."+ogtype+"."+rawtype);
+                                                                                                        context.log("Parameter file successful upload to: /param/PARAM-"+filename+"."+ogtype+".json");
+                                                                                                        context.log("Iron file successful upload to:      /iron/IRON-"+filename+".tiff");
+                                                                                                        context.log("Rainbow file successful upload to:   /rain/RAIN-"+filename+".tiff");
+                                                                                                        context.log("Greyscale file successful upload to: /grey/GREY-"+filename+".tiff");
+
+                                                                                                        // Deleting local temporary files
+                                                                                                        fs.unlink(filename+"-EMBED."+embedtype, (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+"."+ogtype, (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+"-RAW.tiff", (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+'.gray', (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+"-rawtemp.tiff", (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+'-iron.png', (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+"-RGB-iron.tiff", (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+'-rain.png', (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+"-RGB-rain.tiff", (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+'-grey.png', (err) => {if (err) context.log(err);});
+                                                                                                        fs.unlink(filename+"-RGB-grey.tiff", (err) => {if (err) context.log(err);});
+
+                                                                                                        context.done(); // End of function
+                                                                                                    });
+                                                                                                });
+                                                                                            });
+                                                                                        });
+                                                                                    });
+                                                                                });
+                                                                            });
+                                                                        });
+                                                                    });
+                                                                });
                                                             });
                                                         });
                                                     });

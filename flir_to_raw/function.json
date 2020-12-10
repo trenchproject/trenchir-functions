@@ -47,6 +47,22 @@
       "direction": "out",
       "path": "iron/IRON-{name}.tiff",
       "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outputrain",
+      "type": "blob",
+      "datatype": "binary",
+      "direction": "out",
+      "path": "rain/RAIN-{name}.tiff",
+      "connection": "AzureWebJobsStorage"
+    },
+    {
+      "name": "outputgrey",
+      "type": "blob",
+      "datatype": "binary",
+      "direction": "out",
+      "path": "grey/GREY-{name}.tiff",
+      "connection": "AzureWebJobsStorage"
     }
   ]
 }
