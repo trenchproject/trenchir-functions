@@ -204,7 +204,7 @@ module.exports = function(context, myBlob) {
                     
                                                                         fs.readFile(filename+'-RGB-rain.tiff', (err, rainimg) => {
 
-                                                                            var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black, lut3d=\'Greyscale.cube\'';
+                                                                            var vf = 'curves=r=\''+scaleMin+'/0 '+scaleMax+'/1\':g=\''+scaleMin+'/0 '+scaleMax+'/1\':b=\''+scaleMin+'/0 '+scaleMax+'/1\', pad='+padding+':'+height+':0:5:black';
                                                                             var args = ['-loglevel', 'quiet', '-vcodec', 'tiff', '-i', filename+"-RAW.tiff", '-vf', vf, '-pix_fmt', 'gray16le', filename+"-RGB-grey.tiff", '-y'];
                                                                             var ffmpeg = spawn(ffmpegPath, args);
 
