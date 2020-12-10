@@ -170,7 +170,7 @@ module.exports = function(context, myBlob) {
                                                 if (err) throw err;
                                                 context.log('stdout:', stdout); 
 
-                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+10+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+10+5', tmin_label, filename+'-RGB-iron.tiff'], function(err, stdout){
+                                                im.convert([filename+'-RGB-iron.tiff', '-pointsize', '15', '-fill', 'white', '-gravity', 'NorthEast', '-annotate', '+5+5', tmax_label, '-gravity', 'SouthEast', '-annotate', '+5+5', tmin_label, filename+'-RGB-iron.tiff'], function(err, stdout){
                                                     if (err) throw err;
                                                     context.log('stdout:', stdout);
 
